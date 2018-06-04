@@ -59,6 +59,7 @@ def process_record_dataset(dataset, is_training, batch_size, shuffle_buffer,
   Returns:
     Dataset of (image, label) pairs ready for iteration.
   """
+  raise NotImplementedError("This branch can only run with synthetic data.")
 
   # We prefetch a batch at a time, This can help smooth out the time taken to
   # load input files as we go through shuffling and processing.
@@ -262,6 +263,8 @@ def resnet_model_fn(features, labels, mode, model_class,
         learning_rate=learning_rate,
         momentum=momentum
     )
+    # I ensure multi-gpu elsewhere.
+    optimizer = tf.contrib.estimator.TowerOptimizer(optimizer)
 
     if loss_scale != 1:
       # When computing fp16 gradients, often intermediate tensor values are
@@ -352,6 +355,10 @@ def resnet_main(
       This is only used if flags_obj.export_dir is passed.
   """
 
+  assert flags_obj.num_gpus == -1
+  assert flags_core.get_num_gpus(flags_obj) > 1
+
+
   # Using the Winograd non-fused algorithms provides a small performance boost.
   os.environ['TF_ENABLE_WINOGRAD_NONFUSED'] = '1'
 
@@ -364,20 +371,26 @@ def resnet_main(
       intra_op_parallelism_threads=flags_obj.intra_op_parallelism_threads,
       allow_soft_placement=True)
 
-  if flags_core.get_num_gpus(flags_obj) == 0:
-    distribution = tf.contrib.distribute.OneDeviceStrategy('device:CPU:0')
-  elif flags_core.get_num_gpus(flags_obj) == 1:
-    distribution = tf.contrib.distribute.OneDeviceStrategy('device:GPU:0')
-  else:
-    distribution = tf.contrib.distribute.MirroredStrategy(
-        num_gpus=flags_core.get_num_gpus(flags_obj)
-    )
+  # if flags_core.get_num_gpus(flags_obj) == 0:
+  #   distribution = tf.contrib.distribute.OneDeviceStrategy('device:CPU:0')
+  # elif flags_core.get_num_gpus(flags_obj) == 1:
+  #   distribution = tf.contrib.distribute.OneDeviceStrategy('device:GPU:0')
+  # else:
+  #   distribution = tf.contrib.distribute.MirroredStrategy(
+  #       num_gpus=flags_core.get_num_gpus(flags_obj)
+  #   )
 
-  run_config = tf.estimator.RunConfig(train_distribute=distribution,
-                                      session_config=session_config)
+  run_config = tf.estimator.RunConfig(
+      # train_distribute=distribution,
+      session_config=session_config
+  )
+
+  model_fn = tf.contrib.estimator.replicate_model_fn(
+      model_function,
+      loss_reduction=tf.losses.Reduction.MEAN)
 
   classifier = tf.estimator.Estimator(
-      model_fn=model_function, model_dir=flags_obj.model_dir, config=run_config,
+      model_fn=model_fn, model_dir=flags_obj.model_dir, config=run_config,
       params={
           'resnet_size': int(flags_obj.resnet_size),
           'data_format': flags_obj.data_format,
@@ -407,15 +420,15 @@ def resnet_main(
   def input_fn_train():
     return input_function(
         is_training=True, data_dir=flags_obj.data_dir,
-        batch_size=per_device_batch_size(
-            flags_obj.batch_size, flags_core.get_num_gpus(flags_obj)),
+        batch_size=flags_obj.batch_size,  #per_device_batch_size(
+            #flags_obj.batch_size, flags_core.get_num_gpus(flags_obj)),
         num_epochs=flags_obj.epochs_between_evals)
 
   def input_fn_eval():
     return input_function(
         is_training=False, data_dir=flags_obj.data_dir,
-        batch_size=per_device_batch_size(
-            flags_obj.batch_size, flags_core.get_num_gpus(flags_obj)),
+        batch_size=flags_obj.batch_size,  #per_device_batch_size(
+        #flags_obj.batch_size, flags_core.get_num_gpus(flags_obj)),
         num_epochs=1)
   total_training_cycle = (flags_obj.train_epochs //
                           flags_obj.epochs_between_evals)
