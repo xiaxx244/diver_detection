@@ -59,7 +59,6 @@ def process_record_dataset(dataset, is_training, batch_size, shuffle_buffer,
   Returns:
     Dataset of (image, label) pairs ready for iteration.
   """
-  raise NotImplementedError("This branch can only run with synthetic data.")
 
   # We prefetch a batch at a time, This can help smooth out the time taken to
   # load input files as we go through shuffling and processing.
@@ -89,7 +88,7 @@ def process_record_dataset(dataset, is_training, batch_size, shuffle_buffer,
   # critical training path. Setting buffer_size to tf.contrib.data.AUTOTUNE
   # allows DistributionStrategies to adjust how many batches to fetch based
   # on how many devices are present.
-  dataset = dataset.prefetch(buffer_size=tf.contrib.data.AUTOTUNE)
+  dataset = dataset.prefetch(buffer_size=1)
 
   return dataset
 
