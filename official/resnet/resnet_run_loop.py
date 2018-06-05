@@ -369,8 +369,13 @@ def resnet_main(
   elif flags_core.get_num_gpus(flags_obj) == 1:
     distribution = tf.contrib.distribute.OneDeviceStrategy('device:GPU:0')
   else:
+    n_gpu = flags_core.get_num_gpus(flags_obj)
+    tf.logging.info(
+        "Setting all_reduce to use hierarchical copy rather than NCCL")
     distribution = tf.contrib.distribute.MirroredStrategy(
-        num_gpus=flags_core.get_num_gpus(flags_obj)
+        num_gpus=n_gpu,
+        cross_tower_ops=tf.contrib.distribute.AllReduceCrossTowerOps(
+            "hierarchical_copy", num_packs=n_gpu)
     )
 
   run_config = tf.estimator.RunConfig(train_distribute=distribution,
