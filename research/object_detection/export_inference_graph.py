@@ -35,10 +35,10 @@ and the following output nodes returned by the model.postprocess(..):
       that specifies the number of valid boxes per image in the batch.
   * `detection_boxes`: Outputs float32 tensors of the form
       [batch, num_boxes, 4] containing detected boxes.
-  * `detection_scores`: Outputs float32 tensors of the form
-      [batch, num_boxes] containing class scores for the detections.
   * `detection_classes`: Outputs float32 tensors of the form
       [batch, num_boxes] containing classes for the detections.
+  * `detection_scores`: Outputs float32 tensors of the form
+      [batch, num_boxes] containing class scores for the detections.
   * `detection_masks`: Outputs float32 tensors of the form
       [batch, num_boxes, mask_height, mask_width] containing predicted instance
       masks for each box if its present in the dictionary of postprocessed
