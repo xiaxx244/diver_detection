@@ -92,3 +92,5 @@ ENV/
 .idea/
 
 samples/outreach/blogs/segmentation_blogpost/carvana-image-masking-challenge/
+
+samples/outreach/blogs/segmentation_blogpost/data-science-bowl-2018/
