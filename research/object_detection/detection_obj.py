@@ -314,7 +314,7 @@ with detection_graph.as_default():
         for i in range(len(diver)):
             if len(diver[i])>max:
                 max=len(diver[i])
-        vec3=k_means(diver,len(diver[0]))
+        vec3=k_means(diver,max)
         print(vec3)
         for (image_path,(ymin,xmin,ymax,xmax),id) in vec3:
             image=cv2.imread(image_path)
