@@ -8,7 +8,7 @@
 ### Citation
 - Paper: https://ieeexplore.ieee.org/stamp/stamp.jsp?arnumber=8794290
 - Bibliography entry for citation:
-	```
+```
 	@inproceedings{xia2019visual,
   title={Visual Diver Recognition for Underwater Human-Robot Collaboration},
   author={Xia, Youya and Sattar, Junaed},
@@ -17,4 +17,4 @@
   year={2019},
   organization={IEEE}
 }
-	```
+```
