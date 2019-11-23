@@ -5,6 +5,7 @@
 - under the tensorflow/models/research/object_detecion/detection_obj.py, set the path to your labels, test images and frozen training graphs
 - run python detection_obj.py
 - under the path to your test images folder, the final training results will be shown (i.e., override the original images).
+- If you need pretrained model, please send the author Youya Xia (youyaxia@cs.cornell.edu) an email request.
 
 ### Citation
 - Paper: https://ieeexplore.ieee.org/stamp/stamp.jsp?arnumber=8794290
