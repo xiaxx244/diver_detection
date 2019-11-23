@@ -1,4 +1,4 @@
-# Diver identification for Huamn-robot collaboration
+# Diver identification for Human-robot collaboration
 
 ### usage
 - train your diver detection model by Faster R-CNN according to this [tutorial](https://gist.github.com/douglasrizzo/c70e186678f126f1b9005ca83d8bd2ce)
