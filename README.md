@@ -21,4 +21,4 @@
 }
 ```
 ### Acknowledgements
-- https://github.com/tensorflow/models/research/object_detection
+- https://github.com/tensorflow/models
